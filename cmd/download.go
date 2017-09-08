@@ -3,13 +3,13 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/eloo/github-release-tool/models"
 	"github.com/urfave/cli"
 	"gopkg.in/resty.v0"
+	"log"
 	"os"
-	"github.com/eloo/github-release-tool/models"
 	"sort"
 	"strings"
-	"log"
 )
 
 const GITHUB_RELEASE_URL_TEMPLATE = "https://api.github.com/repos/%s/releases"
@@ -48,7 +48,7 @@ func downloadRelease(repository string, pattern string) {
 		fmt.Println("Pattern found: " + pattern)
 		for _, asset := range releases[0].Assets {
 			if strings.Contains(asset.Name, pattern) {
-				filtered_assets = append(filtered_assets,asset)
+				filtered_assets = append(filtered_assets, asset)
 			}
 		}
 	}
