@@ -6,8 +6,7 @@ init_cmds = [
 watch_all = true
 watch_exts = [".go", ".ini", ".toml"]
 watch_dirs = [
-	"$WORKDIR/cmd",
-	"$WORKDIR/models",
+	"$WORKDIR/src",
 ]
 build_delay = 5
 cmds = [

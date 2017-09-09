@@ -6,16 +6,16 @@ import (
 	"github.com/eloo/github-release-tool/models"
 	"github.com/urfave/cli"
 	"gopkg.in/resty.v0"
-	"log"
 	"os"
 	"sort"
 	"strings"
+	"github.com/Unknwon/log"
 )
 
 const GITHUB_RELEASE_URL_TEMPLATE = "https://api.github.com/repos/%s/releases"
 
 var (
-	CmdDownload = cli.Command{
+	Download = cli.Command{
 		Name:        "download",
 		Description: "Download a release file",
 		ShortName:   "d",
@@ -45,7 +45,7 @@ func downloadRelease(repository string, pattern string) {
 
 	var filtered_assets []models.Asset
 	if len(pattern) > 0 {
-		fmt.Println("Pattern found: " + pattern)
+		log.Info("Pattern found: %s",pattern)
 		for _, asset := range releases[0].Assets {
 			if strings.Contains(asset.Name, pattern) {
 				filtered_assets = append(filtered_assets, asset)
@@ -53,7 +53,7 @@ func downloadRelease(repository string, pattern string) {
 		}
 	}
 	if len(filtered_assets) > 2 {
-		fmt.Errorf("Found multiple candidate files.")
+		log.Error("found multiple candidate files.")
 	}
 	for _, file := range filtered_assets {
 		fmt.Println(file.Name)
@@ -66,7 +66,7 @@ func downloadRelease(repository string, pattern string) {
 		Get(filtered_assets[0].DownloadUrl)
 	fmt.Println(response.RawResponse)
 	if err != nil {
-		fmt.Errorf("Download failed: {}", err)
+		fmt.Errorf("download failed: %s", err)
 	}
 }
 
@@ -74,12 +74,12 @@ func getReleases(repository string) []models.Release {
 	url := fmt.Sprintf(GITHUB_RELEASE_URL_TEMPLATE, repository)
 	resp, err := resty.R().SetAuthToken(os.Getenv("GITHUB_TOKEN")).Get(url)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Error", err)
 	}
 	var releases []models.Release
 	err = json.Unmarshal(resp.Body(), &releases)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Error", err)
 	}
 	for _, release := range releases {
 		fmt.Println(release.TagName + " " + release.PublishedAt.Local().String())
