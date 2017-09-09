@@ -23,11 +23,11 @@ FLAGS_windows_amd64 = $(FLAGS_all) 		GOOS=windows GOARCH=amd64 CGO_ENABLED=0
 
 deps:
 	go get github.com/Unknwon/bra
+	go get -u github.com/golang/lint/golint
 	go get -d ./...
 
 lint:
-	go get github.com/golang/lint
-	golint '*.go' '**/*.go'
+	golint ./...
 
 run:
 	./bin/github-release-tool
