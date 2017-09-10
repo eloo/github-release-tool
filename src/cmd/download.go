@@ -9,8 +9,8 @@ import (
 	"gopkg.in/resty.v0"
 	"os"
 
-	"strings"
 	"robpike.io/filter"
+	"strings"
 )
 
 const githubReleaseURLTemplate = "https://api.github.com/repos/%s/releases"
@@ -40,7 +40,7 @@ var (
 	}
 )
 
-func downloadAsset(candidate models.DownloadCandidate){
+func download(candidate models.DownloadCandidate) {
 	resty.SetRedirectPolicy(resty.FlexibleRedirectPolicy(15))
 	response, err := resty.R().
 		SetOutput(candidate.File.Name).
@@ -67,7 +67,17 @@ func downloadRelease(repository string, pattern string) {
 
 	binaryAssets := getBinaries(assets)
 	checksumAssets := getChecksums(assets)
-	createDownloadCandidates(binaryAssets, checksumAssets)
+	candidates := createDownloadCandidates(binaryAssets, checksumAssets)
+
+	switch len(candidates) {
+	case 0:
+		log.Error("No possible download candidate found.")
+	case 1:
+		download(candidates[0])
+	default:
+		log.Error("Found %d possible download candidates. Please use an more accurate search string", len(candidates))
+
+	}
 
 }
 func createDownloadCandidates(binaries []models.Asset, checksums []models.Asset) []models.DownloadCandidate {
@@ -83,11 +93,10 @@ func getBinaries(assets []models.Asset) []models.Asset {
 		return !strings.HasSuffix(v.Name, ".sha256")
 	})
 	binaries, ok := files.([]models.Asset)
-	if ok {
-		return binaries
-	} else {
-		return make([]models.Asset,0)
+	if !ok {
+		return make([]models.Asset, 0)
 	}
+	return binaries
 }
 
 func getChecksums(assets []models.Asset) []models.Asset {
@@ -95,14 +104,13 @@ func getChecksums(assets []models.Asset) []models.Asset {
 		return strings.HasSuffix(v.Name, ".sha256")
 	})
 	checksums, ok := files.([]models.Asset)
-	if ok {
-		return checksums
-	} else {
-		return make([]models.Asset,0)
+	if !ok {
+		return make([]models.Asset, 0)
 	}
+	return checksums
 }
 
-func getLatestRelease(repository string) models.Release{
+func getLatestRelease(repository string) models.Release {
 	url := fmt.Sprintf(githubLatestReleaseURLTemplate, repository)
 	resp, err := resty.R().SetAuthToken(os.Getenv("GITHUB_TOKEN")).Get(url)
 	if err != nil {
