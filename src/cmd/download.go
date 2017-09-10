@@ -9,6 +9,7 @@ import (
 	"gopkg.in/resty.v0"
 	"os"
 
+	"path/filepath"
 	"robpike.io/filter"
 	"strings"
 )
@@ -19,18 +20,25 @@ const githubLatestReleaseURLTemplate = "https://api.github.com/repos/%s/releases
 var (
 	// Download command used from the cli
 	Download = cli.Command{
-		Name:        "download",
-		Description: "Download a release file for the passed repository. Per default the latest release will be downloaded",
-		ShortName:   "d",
-		Usage:       "Download a release file",
-		ArgsUsage:   "<:owner/:repo>",
+		Name: "download",
+		Description: "Download a release file for the passed repository. Per default the latest release will be " +
+			"downloaded to the current folder",
+		ShortName: "d",
+		Usage:     "Download a release file",
+		ArgsUsage: "<:owner/:repo>",
 		Flags: []cli.Flag{
 			searchFlag,
+			outputFlag,
 		},
 		Action: func(c *cli.Context) error {
-			downloadRelease(c.Args().First(), c.String("search"))
+			downloadRelease(c.Args().First(), c.String("search"), c.String("output"))
 			return nil
 		},
+	}
+	outputFlag = cli.StringFlag{
+		Value: ".",
+		Name:  "output, o",
+		Usage: "sets an output directory for the directory",
 	}
 	searchFlag = cli.StringFlag{
 		Value: "",
@@ -39,10 +47,11 @@ var (
 	}
 )
 
-func download(candidate models.DownloadCandidate) {
+func download(candidate models.DownloadCandidate, outputDirectory string) {
 	resty.SetRedirectPolicy(resty.FlexibleRedirectPolicy(15))
+	destinationPath := filepath.Join(outputDirectory, candidate.File.Name)
 	response, err := resty.R().
-		SetOutput(candidate.File.Name).
+		SetOutput(destinationPath).
 		SetAuthToken(os.Getenv("GITHUB_TOKEN")).
 		Get(candidate.File.DownloadURL)
 	fmt.Println(response.RawResponse)
@@ -51,7 +60,7 @@ func download(candidate models.DownloadCandidate) {
 	}
 }
 
-func downloadRelease(repository string, pattern string) {
+func downloadRelease(repository string, pattern string, outputDirectory string) {
 	latestRelease := getLatestRelease(repository)
 
 	var assets []models.Asset
@@ -72,7 +81,7 @@ func downloadRelease(repository string, pattern string) {
 	case 0:
 		log.Error("No possible download candidate found.")
 	case 1:
-		download(candidates[0])
+		download(candidates[0], outputDirectory)
 	default:
 		log.Error("Found %d possible download candidates. Please use an more accurate search string", len(candidates))
 
