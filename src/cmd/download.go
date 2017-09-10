@@ -20,23 +20,22 @@ var (
 	// Download command used from the cli
 	Download = cli.Command{
 		Name:        "download",
-		Description: "Download a release file",
+		Description: "Download a release file for the passed repository. Per default the latest release will be downloaded",
 		ShortName:   "d",
 		Usage:       "Download a release file",
-		ArgsUsage:   "<github_repository>",
+		ArgsUsage:   "<:owner/:repo>",
 		Flags: []cli.Flag{
-			cli.StringFlag{
-				Value: "",
-				Name:  "search, s",
-				Usage: "search string for filename matching",
-			},
-			cli.BoolFlag{
-				Name: "drafts, d",
-			}},
+			searchFlag,
+		},
 		Action: func(c *cli.Context) error {
 			downloadRelease(c.Args().First(), c.String("search"))
 			return nil
 		},
+	}
+	searchFlag = cli.StringFlag{
+		Value: "",
+		Name:  "search, s",
+		Usage: "search string for filename matching",
 	}
 )
 
