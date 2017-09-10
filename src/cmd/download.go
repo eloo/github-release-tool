@@ -45,7 +45,7 @@ func downloadAsset(candidate models.DownloadCandidate){
 	response, err := resty.R().
 		SetOutput(candidate.File.Name).
 		SetAuthToken(os.Getenv("GITHUB_TOKEN")).
-		Get(candidate.File.DownloadUrl)
+		Get(candidate.File.DownloadURL)
 	fmt.Println(response.RawResponse)
 	if err != nil {
 		fmt.Errorf("download failed: %s", err)
@@ -54,11 +54,6 @@ func downloadAsset(candidate models.DownloadCandidate){
 
 func downloadRelease(repository string, pattern string) {
 	latestRelease := getLatestRelease(repository)
-
-	//releases := getReleases(repository)
-	//sort.Slice(releases, func(i, j int) bool {
-	//	return releases[i].PublishedAt.Before(releases[i].PublishedAt)
-	//})
 
 	var assets []models.Asset
 	if len(pattern) > 0 {
@@ -69,18 +64,10 @@ func downloadRelease(repository string, pattern string) {
 			}
 		}
 	}
+
 	binaryAssets := getBinaries(assets)
 	checksumAssets := getChecksums(assets)
 	createDownloadCandidates(binaryAssets, checksumAssets)
-
-
-	//if len(filteredAssets) > 2 {
-	//	log.Error("found multiple candidate files")
-	//}
-	//for _, file := range filteredAssets {
-	//	fmt.Println(file.Name)
-	//}
-	//fmt.Println(filteredAssets[0].DownloadUrl)
 
 }
 func createDownloadCandidates(binaries []models.Asset, checksums []models.Asset) []models.DownloadCandidate {

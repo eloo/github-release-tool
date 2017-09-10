@@ -2,6 +2,7 @@ package models
 
 import "time"
 
+// Release representing a Github release
 type Release struct {
 	Name        string    `json:"name"`
 	TagName     string    `json:"tag_name"`
@@ -10,14 +11,10 @@ type Release struct {
 	CreatedAt   time.Time `json:"created_at"`
 }
 
+// Asset representing a Github asset
 type Asset struct {
-	Url         string    `json:"url"`
+	URL         string    `json:"url"`
 	Name        string    `json:"name"`
 	UpdatedAt   time.Time `json:"updated_at"`
-	DownloadUrl string    `json:"browser_download_url"`
-}
-
-type DownloadCandidate struct {
-	File     Asset
-	Checksum Asset
+	DownloadURL string    `json:"browser_download_url"`
 }
