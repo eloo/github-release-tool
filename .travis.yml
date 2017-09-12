@@ -1,0 +1,6 @@
+language: go
+
+before_install:
+- make deps
+
+install: make build
