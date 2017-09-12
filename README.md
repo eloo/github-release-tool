@@ -1,7 +1,7 @@
 # github-release-tool
 
-[![GoReport](https://goreportcard.com/badge/Eloo/github-release-tool)](https://goreportcard.com/report/Eloo/github-release-tool)
-[![GoDoc](https://godoc.org/github.com/Eloo/github-release-tool?status.svg)](https://godoc.org/github.com/Eloo/github-release-tool)
+[![GoReport](https://goreportcard.com/badge/eloo/github-release-tool)](https://goreportcard.com/report/eloo/github-release-tool)
+[![GoDoc](https://godoc.org/github.com/eloo/github-release-tool?status.svg)](https://godoc.org/github.com/eloo/github-release-tool)
 
 Simple cli tool for working with Github releases.
 
