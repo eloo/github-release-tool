@@ -1,5 +1,5 @@
 # github-release-tool
-
+[![Build Status](https://api.travis-ci.org/eloo/github-release-tool.svg?branch=master)](https://travis-ci.org/Eloo/github-release-tool)
 [![GoReport](https://goreportcard.com/badge/eloo/github-release-tool)](https://goreportcard.com/report/eloo/github-release-tool)
 [![GoDoc](https://godoc.org/github.com/eloo/github-release-tool?status.svg)](https://godoc.org/github.com/eloo/github-release-tool)
 
