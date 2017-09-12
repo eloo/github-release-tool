@@ -49,3 +49,5 @@ build-%:
 
 build:
 	go build -o 'bin/${NAME}'
+
+.DEFAULT_GOAL := build
