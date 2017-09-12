@@ -1,6 +1,6 @@
 language: go
 
-before_install:
+install:
 - make deps
 
-install: make build
+script: make build-all
