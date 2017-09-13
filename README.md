@@ -15,5 +15,5 @@ github-release-tool download [command options] <:owner/:repo>
 ```
 e.g. this would download the latest release containing the string arm-7 to a relative download directory
 ```
-github-release-tool download -s "arm-7" -o download Eloo/github-release-tool
+github-release-tool download -s "arm-7" -o download eloo/github-release-tool
 ```
