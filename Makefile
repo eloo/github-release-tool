@@ -45,6 +45,7 @@ build-all: clean $(foreach PLATFORM,$(PLATFORMS),build-$(PLATFORM))
 
 build-%:
 	echo "Compiling release for $*"
+	$(FLAGS_$*) go get -d ./...
 	$(FLAGS_$*) go build -ldflags "-X github.com/eloo/github-release-tool/src/cmd.version=${RELEASE_VERSION}" -o 'bin/${NAME}-v${RELEASE_VERSION}-$*'
 
 build:
