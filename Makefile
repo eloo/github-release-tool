@@ -36,7 +36,7 @@ fmt:
 	gofmt -w -s .
 
 test:
-	godep go test ./...
+	go test ./...
 
 clean:
 	rm -rf bin
@@ -45,7 +45,7 @@ build-all: clean $(foreach PLATFORM,$(PLATFORMS),build-$(PLATFORM))
 
 build-%:
 	echo "Compiling release for $*"
-	$(FLAGS_$*) go build -ldflags "-X main.version=${RELEASE_VERSION}" -o 'bin/${NAME}-v${RELEASE_VERSION}-$*'
+	$(FLAGS_$*) go build -ldflags "-X github.com/eloo/github-release-tool/src/cmd.version=${RELEASE_VERSION}" -o 'bin/${NAME}-v${RELEASE_VERSION}-$*'
 
 build:
 	go build -o 'bin/${NAME}'

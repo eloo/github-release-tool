@@ -1,22 +1,19 @@
 package main
 
 import (
+	"fmt"
 	"github.com/eloo/github-release-tool/src/cmd"
-	"github.com/urfave/cli"
-	"os"
-
 	"github.com/eloo/github-release-tool/src/log"
+	"os"
 )
 
 var version string
 
 func main() {
-	app := cli.NewApp()
-	app.Version = version
-	app.Commands = []cli.Command{
-		cmd.Download,
+	if err := cmd.RootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
-	app.Run(os.Args)
 }
 
 func init() {
