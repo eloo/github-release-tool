@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"github.com/eloo/github-release-tool/src/log"
 	"github.com/eloo/github-release-tool/src/models"
-	"github.com/urfave/cli"
 	"gopkg.in/resty.v0"
 	"os"
 
+	"github.com/spf13/cobra"
 	"path/filepath"
 	"robpike.io/filter"
 	"strings"
@@ -17,35 +17,27 @@ import (
 const githubReleaseURLTemplate = "https://api.github.com/repos/%s/releases"
 const githubLatestReleaseURLTemplate = "https://api.github.com/repos/%s/releases/latest"
 
-var (
-	// Download command used from the cli
-	Download = cli.Command{
-		Name: "download",
-		Description: "Download a release file for the passed repository. Per default the latest release will be " +
-			"downloaded to the current folder",
-		ShortName: "d",
-		Usage:     "Download a release file",
-		ArgsUsage: "<:owner/:repo>",
-		Flags: []cli.Flag{
-			searchFlag,
-			outputFlag,
-		},
-		Action: func(c *cli.Context) error {
-			downloadRelease(c.Args().First(), c.String("search"), c.String("output"))
-			return nil
-		},
-	}
-	outputFlag = cli.StringFlag{
-		Value: ".",
-		Name:  "output, o",
-		Usage: "sets an output directory for the directory",
-	}
-	searchFlag = cli.StringFlag{
-		Value: "",
-		Name:  "search, s",
-		Usage: "search string for filename matching",
-	}
-)
+var outputDirectory string
+var searchPattern string
+
+func init() {
+	RootCmd.AddCommand(downloadCmd)
+	downloadCmd.Flags().StringVarP(&outputDirectory, "output", "o", ".", "Output directory")
+	downloadCmd.Flags().StringVarP(&searchPattern, "pattern", "p", "", "Pattern for download candidate name")
+	downloadCmd.SetUsageTemplate("github-release-tool download <:owner/:repo> [flags]")
+}
+
+var downloadCmd = &cobra.Command{
+	Use:     "download",
+	Aliases: []string{"d"},
+	Short:   "Download a release file",
+	Long: "Download a release file for the passed repository. Per default the latest release will be " +
+		"downloaded to the current folder.",
+	Args: cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		downloadRelease(args[0], searchPattern, outputDirectory)
+	},
+}
 
 func download(candidate models.DownloadCandidate, outputDirectory string) {
 	resty.SetRedirectPolicy(resty.FlexibleRedirectPolicy(15))
@@ -61,6 +53,7 @@ func download(candidate models.DownloadCandidate, outputDirectory string) {
 }
 
 func downloadRelease(repository string, pattern string, outputDirectory string) {
+	log.Debug("Download a release of repo %s", repository)
 	latestRelease := getLatestRelease(repository)
 
 	var assets []models.Asset

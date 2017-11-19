@@ -11,9 +11,9 @@ Simple cli tool for working with Github releases.
 ## Usage
 Download the latest release of Github repository
 ```
-github-release-tool download [command options] <:owner/:repo>
+github-release-tool download <:owner/:repo> [flags]
 ```
 e.g. this would download the latest release containing the string arm-7 to a relative download directory
 ```
-github-release-tool download -s "arm-7" -o download eloo/github-release-tool
+github-release-tool download -s "arm-7" eloo/github-release-tool -o download
 ```
