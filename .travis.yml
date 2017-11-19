@@ -3,4 +3,10 @@ language: go
 install:
 - make deps
 
-script: make build-all
+script:
+  - echo $TRAVIS_BRANCH
+  - if [ "$TRAVIS_BRANCH" == "master" ];
+      then make build-all;
+      else make build;
+    fi
+
