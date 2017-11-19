@@ -4,6 +4,7 @@ install:
 - make deps
 
 script:
+  - echo $TRAVIS_BRANCH
   - if [ "$TRAVIS_BRANCH" == "master" ];
       then make build-all;
       else make build;
