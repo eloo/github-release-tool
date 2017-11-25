@@ -1,10 +1,5 @@
-buildscript {
-    repositories { jcenter() }
-    dependencies {
-        classpath 'com.netflix.nebula:nebula-release-plugin:6.1.0'
-    }
-}
-apply plugin: 'nebula.release'
+apply plugin: 'org.ajoberstar.grgit'
+
 task pushToGit(){
 	println "Commit version"
 	doLast{
