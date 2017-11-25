@@ -8,5 +8,5 @@ jdk:
 
 before_script:
  - chmod +x gradlew
- 
+
 script: "./gradle/buildViaTravis.sh"
