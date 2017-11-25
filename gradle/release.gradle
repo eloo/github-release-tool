@@ -21,8 +21,8 @@ task pushToGit(){
 }
 
 task updateVersion(){
-	doLast{
 		finalizedBy pushToGit
+	doLast{
 		Properties props = new Properties()
 		File propsFile = new File('version.properties')
 		props.load(propsFile.newDataInputStream())
