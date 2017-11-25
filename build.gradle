@@ -26,7 +26,7 @@ task pushToGit(){
 	    println "Commit version"
 		def grgit = org.ajoberstar.grgit.Grgit.open(dir: '.')
 		grgit.add(patterns: ['version.properties'])
-		grgit.commit(message: 'Committing Version Property Changes')
+		grgit.commit(message: 'Bump version [ci skip]')
 	}
 }
 
