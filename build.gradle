@@ -1,6 +1,6 @@
 plugins {
     id 'com.github.blindpirate.gogradle' version '0.7.0'
-    id 'nebula.release' version '6.1.0'
+    id 'nebula.release' version '6.0.0'
 }
 
 def gitPath = 'github.com/eloo/github-release-tool' // go import path of project to be built, NOT local file system path!
