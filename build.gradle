@@ -28,6 +28,6 @@ props.load(propsFile.newDataInputStream())
 props.setProperty('version', version.toString())
 props.store(propsFile.newWriter(), null)
 }
-tasks.release.finalizedBy updateVersion
+tasks.release.dependsOn updateVersion
 
 
