@@ -15,9 +15,9 @@ goBuild {
 }
 
 
-###
-# Versioning
-###
+//
+// Versioning
+//
 task pushToGit(){
 	doLast{
 	    println "Commit version"
