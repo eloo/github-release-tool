@@ -11,6 +11,7 @@ golang {
 }
 
 version = '0.0.1'
+def inferredVersion = "0.0.0"
 goBuild {
     outputLocation = './bin/${PROJECT_NAME}_v' + version +'_${GOOS}_${GOARCH}${GOEXE}'
 }
