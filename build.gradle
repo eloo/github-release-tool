@@ -13,10 +13,11 @@ golang {
 goBuild {
     outputLocation = './bin/${PROJECT_NAME}_v' + version +'_${GOOS}_${GOARCH}${GOEXE}'
 }
-postRelease{
+release{
+doLast{
 Properties props = new Properties()
 File propsFile = new File('gradle.properties')
 props.load(propsFile.newDataInputStream())
 props.setProperty('version', version.toString())
-props.store(propsFile.newWriter(), null)
+props.store(propsFile.newWriter(), null)}
 }
