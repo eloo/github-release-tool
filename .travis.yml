@@ -6,4 +6,7 @@ cache:
 jdk:
   - oraclejdk8
 
+before_script:
+ - chmod +x gradlew
+ 
 script: "./gradle/buildViaTravis.sh"
