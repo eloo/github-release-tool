@@ -31,6 +31,7 @@ task pushToGit(){
 }
 
 task updateVersion(){
+	finalizedBy pushToGit
 	doLast{
 		Properties props = new Properties()
 		File propsFile = new File('version.properties')
