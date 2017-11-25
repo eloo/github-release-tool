@@ -1,16 +1,10 @@
 buildscript {
-	repositories {
-		maven {
-			url "https://plugins.gradle.org/m2/"
-		}
-	}
-	dependencies {
-		classpath "org.ajoberstar:grgit:2.1.0"
-	}
+    repositories { jcenter() }
+    dependencies {
+        classpath 'com.netflix.nebula:nebula-release-plugin:6.1.0'
+    }
 }
-
-apply plugin: "org.ajoberstar.grgit"
-
+apply plugin: 'nebula.release'
 task pushToGit(){
 	println "Commit version"
 	doLast{
@@ -21,7 +15,7 @@ task pushToGit(){
 }
 
 task updateVersion(){
-		finalizedBy pushToGit
+	finalizedBy pushToGit
 	doLast{
 		Properties props = new Properties()
 		File propsFile = new File('version.properties')
