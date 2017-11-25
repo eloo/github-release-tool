@@ -1,12 +1,9 @@
-language: go
+language: java
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+jdk:
+  - oraclejdk8
 
-install:
-- make deps
-
-script:
-  - echo $TRAVIS_BRANCH
-  - if [ "$TRAVIS_BRANCH" == "master" ];
-      then make build-all;
-      else make build;
-    fi
-
+script: "./gradle/buildViaTravis.sh"
