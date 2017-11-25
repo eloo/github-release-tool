@@ -1,9 +1,3 @@
-buildscript {
-    dependencies {
-        classpath 'com.netflix.nebula:nebula-release-plugin:6.1.0'
-    }
-}
-
 plugins {
 	id 'com.github.blindpirate.gogradle' version '0.7.0'
 }
