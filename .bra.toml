@@ -5,9 +5,7 @@ init_cmds = [
 ]
 watch_all = true
 watch_exts = [".go", ".ini", ".toml"]
-watch_dirs = [
-	"$WORKDIR/src",
-]
+ignore = [".git", "vendor", "build", "dist"] # Directories to exclude from watching
 build_delay = 5
 cmds = [
     ["go", "build", "-o", "./build/github-release-tool"],
