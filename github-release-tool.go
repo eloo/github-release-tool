@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/eloo/github-release-tool/src/cmd"
-	"github.com/eloo/github-release-tool/src/log"
+	"github.com/eloo/github-release-tool/cmd"
+	"github.com/eloo/github-release-tool/log"
 	"os"
 )
 

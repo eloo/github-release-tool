@@ -3,8 +3,8 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/eloo/github-release-tool/src/log"
-	"github.com/eloo/github-release-tool/src/models"
+	"github.com/eloo/github-release-tool/log"
+	"github.com/eloo/github-release-tool/models"
 	"gopkg.in/resty.v0"
 	"os"
 
