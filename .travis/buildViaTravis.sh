@@ -6,7 +6,7 @@ if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
   make build
 elif [ "$TRAVIS_BRANCH" == "master" ] ; then
   echo -e 'Build Master Branch ['$TRAVIS_BRANCH']'
-  make build
+  make release
 elif [ "$TRAVIS_BRANCH" == "develop" ] ; then
   echo -e 'Build Develop Branch ['$TRAVIS_BRANCH']'
   make build

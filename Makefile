@@ -1,54 +1,141 @@
-PLATFORMS := linux_amd64 linux_386 linux_arm5 linux_arm6 linux_arm7 linux_arm64 darwin_amd64 darwin_386 freebsd_amd64 freebsd_386 windows_386 windows_amd64 linux_arm64
+DIST := dist
+BUILD_DIR := build
 
-NAME = github-release-tool
-RELEASE_VERSION = 0.0.1
+GO ?= go
+SED_INPLACE := sed -i
 
-FLAGS_all = GOROOT=$(GOROOT) GOPATH=$(GOPATH)
-FLAGS_linux_amd64   = $(FLAGS_all) 		GOOS=linux   GOARCH=amd64
-FLAGS_linux_386     = $(FLAGS_all) 		GOOS=linux   GOARCH=386
-FLAGS_linux_arm5     = $(FLAGS_all) 	GOOS=linux   GOARCH=arm   GOARM=5 # ARM5 support for Raspberry Pi
-FLAGS_linux_arm6     = $(FLAGS_all) 	GOOS=linux   GOARCH=arm   GOARM=6 # ARM5 support for Raspberry Pi
-FLAGS_linux_arm7     = $(FLAGS_all) 	GOOS=linux   GOARCH=arm   GOARM=7 # ARM5 support for Raspberry Pi
-FLAGS_linux_arm7     = $(FLAGS_all) 	GOOS=linux   GOARCH=arm   GOARM=7 # ARM5 support for Raspberry Pi
-FLAGS_linux_arm64     = $(FLAGS_all) 	GOOS=linux   GOARCH=arm64 		  # ARM5 support for Raspberry Pi
-FLAGS_darwin_amd64  = $(FLAGS_all) 		GOOS=darwin  GOARCH=amd64 CGO_ENABLED=0
-FLAGS_darwin_386    = $(FLAGS_all) 		GOOS=darwin  GOARCH=386   CGO_ENABLED=0
-FLAGS_freebsd_amd64  = $(FLAGS_all) 	GOOS=freebsd GOARCH=amd64 CGO_ENABLED=0
-FLAGS_freebsd_386    = $(FLAGS_all) 	GOOS=freebsd GOARCH=386   CGO_ENABLED=0
-FLAGS_windows_386   = $(FLAGS_all) 		GOOS=windows GOARCH=386   CGO_ENABLED=0
-FLAGS_windows_amd64 = $(FLAGS_all) 		GOOS=windows GOARCH=amd64 CGO_ENABLED=0
+ifeq ($(OS), Windows_NT)
+	EXECUTABLE := github-release-tool.exe
+else
+	EXECUTABLE := github-release-tool
+	UNAME_S := $(shell uname -s)
+	ifeq ($(UNAME_S),Darwin)
+		SED_INPLACE := sed -i ''
+	endif
+endif
 
-.PHONY: clean test lint fmt build
+GOFILES := $(shell find . -name "*.go" -type f ! -path "./vendor/*")
+GOFMT ?= gofmt -s
 
+GOFLAGS := -i -v
+EXTRA_GOFLAGS ?=
 
-deps:
-	go get github.com/Unknwon/bra
-	go get -u github.com/golang/lint/golint
-	go get -d ./...
+LDFLAGS := -X "main.Version=$(shell git describe --tags --always | sed 's/-/+/' | sed 's/^v//')" -X "main.Tags=$(TAGS)"
 
-lint:
-	golint ./...
+PACKAGES ?= $($(shell $(GO) list ./... | grep -v /vendor/))
+SOURCES ?= $(shell find . -name "*.go" -type f)
 
-run:
-	./bin/github-release-tool
+TAGS ?=
 
-fmt:
-	gofmt -w -s .
+ifeq ($(OS), Windows_NT)
+	EXECUTABLE := github-release-tool.exe
+else
+	EXECUTABLE := github-release-tool
+endif
 
-test:
-	go test ./...
+ifneq ($(DRONE_TAG),)
+	VERSION ?= $(subst v,,$(DRONE_TAG))
+else
+	ifneq ($(DRONE_BRANCH),)
+		VERSION ?= $(subst release/v,,$(DRONE_BRANCH))
+	else
+		VERSION ?= master
+	endif
+endif
 
+.PHONY: all
+all: build
+
+.PHONY: clean
 clean:
-	rm -rf bin
+	$(GO) clean -i ./...
+	rm -rf $(EXECUTABLE) $(DIST) $(BUILD_DIR)
 
-build-all: clean $(foreach PLATFORM,$(PLATFORMS),build-$(PLATFORM))
+.PHONY: dep
+dep:
+	@hash dep > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO) get -u github.com/golang/dep/cmd/dep; \
+	fi
+	dep ensure
 
-build-%:
-	echo "Compiling release for $*"
-	$(FLAGS_$*) go get -d ./...
-	$(FLAGS_$*) go build -ldflags "-X github.com/eloo/github-release-tool/src/cmd.version=${RELEASE_VERSION}" -o 'bin/${NAME}-v${RELEASE_VERSION}-$*'
+.PHONY: fmt
+fmt:
+	$(GOFMT) -w $(GOFILES)
 
-build:
-	go build -o 'bin/${NAME}'
+.PHONY: vet
+vet:
+	$(GO) vet $(PACKAGES)
 
-.DEFAULT_GOAL := build
+.PHONY: errcheck
+errcheck:
+	@hash errcheck > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO) get -u github.com/kisielk/errcheck; \
+	fi
+	errcheck $(PACKAGES)
+
+.PHONY: lint
+lint:
+	@hash golint > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO) get -u github.com/golang/lint/golint; \
+	fi
+	for PKG in $(PACKAGES); do golint -set_exit_status $$PKG || exit 1; done;
+
+.PHONY: misspell-check
+misspell-check:
+	@hash misspell > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO) get -u github.com/client9/misspell/cmd/misspell; \
+	fi
+	misspell -error -i unknwon $(GOFILES)
+
+.PHONY: misspell
+misspell:
+	@hash misspell > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO) get -u github.com/client9/misspell/cmd/misspell; \
+	fi
+	misspell -w -i unknwon $(GOFILES)
+
+.PHONY: fmt-check
+fmt-check:
+	# get all go files and run go fmt on them
+	@diff=$$($(GOFMT) -d $(GOFILES)); \
+	if [ -n "$$diff" ]; then \
+		echo "Please run 'make fmt' and commit the result:"; \
+		echo "$${diff}"; \
+		exit 1; \
+	fi;
+
+.PHONY: test
+test:
+	echo $(GO) test $(PACKAGES)
+
+.PHONY: coverage
+coverage:
+	@hash gocovmerge > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO) get -u github.com/wadey/gocovmerge; \
+	fi
+	gocovmerge integration.coverage.out $(shell find . -type f -name "coverage.out") > coverage.all;\
+
+.PHONY: install
+install: $(wildcard *.go)
+	$(GO) install -v -tags '$(TAGS)' -ldflags '-s -w $(LDFLAGS)'
+
+.PHONY: build
+build: $(EXECUTABLE)
+
+$(EXECUTABLE): $(SOURCES)
+	$(GO) build $(GOFLAGS) $(EXTRA_GOFLAGS) -tags '$(TAGS)' -ldflags '-s -w $(LDFLAGS)' -o "$(BUILD_DIR)/$(EXECUTABLE)"
+
+.PHONY: release
+release: release-build release-check
+
+.PHONY: release-build
+release-build:
+	@hash gox > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO) get -u github.com/mitchellh/gox; \
+	fi
+	gox -os "linux windows darwin" -arch="386 amd64 arm arm64" -osarch="!darwin/arm !darwin/arm64" -ldflags '$(LDFLAGS)' -output "$(DIST)/$(EXECUTABLE)_{{.OS}}_{{.Arch}}" 
+
+.PHONY: release-check
+release-check:
+	@cd $(DIST); $(foreach file,$(filter-out $(wildcard $(DIST)/*.sha256), $(wildcard $(DIST)/*)),sha256sum $(notdir $(file)) > $(notdir $(file)).sha256;)
+

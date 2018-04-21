@@ -3,5 +3,4 @@ bin
 download/
 out/
 vendor
-.gogradle
-.gradle
+dist

@@ -1,7 +1,7 @@
 [run]
 init_cmds = [
-  ["go", "build", "-o", "./bin/github-release-tool"],
-	["./bin/github-release-tool"]
+  ["go", "build", "-o", "./build/github-release-tool"],
+	["./build/github-release-tool"]
 ]
 watch_all = true
 watch_exts = [".go", ".ini", ".toml"]
@@ -10,6 +10,6 @@ watch_dirs = [
 ]
 build_delay = 5
 cmds = [
-    ["go", "build", "-o", "./bin/github-release-tool"],
-	["./bin/github-release-tool", "d", "go-gitea/gitea", "-s", "arm-7"]
+    ["go", "build", "-o", "./build/github-release-tool"],
+	["./bin/github-release-tool", "d", "go-gitea/gitea", "-s", "arm-7", "-o", "build"]
 ]
