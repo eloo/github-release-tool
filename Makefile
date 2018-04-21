@@ -27,6 +27,8 @@ SOURCES ?= $(shell find . -name "*.go" -type f)
 
 TAGS ?=
 
+GIT_VERSION_TAG ?= $(shell git tag -l --points-at HEAD | grep v )
+
 ifeq ($(OS), Windows_NT)
 	EXECUTABLE := github-release-tool.exe
 else
@@ -36,10 +38,10 @@ endif
 ifneq ($(DRONE_TAG),)
 	VERSION ?= $(subst v,,$(DRONE_TAG))
 else
-	ifneq ($(DRONE_BRANCH),)
-		VERSION ?= $(subst release/v,,$(DRONE_BRANCH))
+	ifneq ($(GIT_VERSION_TAG),)
+		VERSION ?= $(subst v,,$(GIT_VERSION_TAG))
 	else
-		VERSION ?= master
+		VERSION ?= $(shell git branch | grep \* | cut -d ' ' -f2)
 	endif
 endif
 
@@ -106,7 +108,7 @@ fmt-check:
 
 .PHONY: test
 test:
-	echo $(GO) test $(PACKAGES)
+	$(GO) test $(PACKAGES)
 
 .PHONY: coverage
 coverage:
@@ -125,6 +127,10 @@ build: $(EXECUTABLE)
 $(EXECUTABLE): $(SOURCES)
 	$(GO) build $(GOFLAGS) $(EXTRA_GOFLAGS) -tags '$(TAGS)' -ldflags '-s -w $(LDFLAGS)' -o "$(BUILD_DIR)/$(EXECUTABLE)"
 
+.PHONY: name
+release-name:
+	@echo "$(EXECUTABLE)-$(VERSION)"
+
 .PHONY: release
 release: release-build release-check
 
@@ -133,7 +139,7 @@ release-build:
 	@hash gox > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
 		$(GO) get -u github.com/mitchellh/gox; \
 	fi
-	gox -os "linux windows darwin" -arch="386 amd64 arm arm64" -osarch="!darwin/arm !darwin/arm64" -ldflags '$(LDFLAGS)' -output "$(DIST)/$(EXECUTABLE)_{{.OS}}_{{.Arch}}" 
+	gox -os "linux windows darwin" -arch="386 amd64 arm arm64" -osarch="!darwin/arm !darwin/arm64" -ldflags '$(LDFLAGS)' -output "$(DIST)/$(EXECUTABLE)-$(VERSION)_{{.OS}}_{{.Arch}}" 
 
 .PHONY: release-check
 release-check:
