@@ -1,6 +1,6 @@
 #!/bin/bash
 # This script will build the project.
-
+echo -e "Fetching depencies and test"
 if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
   echo -e "Build Pull Request #$TRAVIS_PULL_REQUEST => Branch [$TRAVIS_BRANCH]"
   make test build
