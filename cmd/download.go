@@ -48,9 +48,14 @@ func download(candidate models.DownloadCandidate, outputDirectory string) {
 		SetOutput(destinationPath).
 		SetAuthToken(os.Getenv("GITHUB_TOKEN")).
 		Get(candidate.File.DownloadURL)
-	fmt.Println(response.RawResponse)
+	log.Debug("Response: %v", response.RawResponse)
 	if err != nil {
 		fmt.Errorf("download failed: %s", err)
+	}
+	log.Debug("DestPath: %v", destinationPath)
+	err = os.Chmod(destinationPath, 0744)
+	if err != nil {
+		log.Error("Unable to set chmod: %v", err)
 	}
 }
 
