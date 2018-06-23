@@ -1,8 +1,10 @@
 language: go
 
 go:
-- "1.10"
+  - "1.10"
+
 before_script:
   - "make golang-dep"
+  
 script: 
   - "./.travis/buildViaTravis.sh"
