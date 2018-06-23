@@ -4,3 +4,6 @@ download/
 out/
 vendor
 .vscode
+
+dist
+build

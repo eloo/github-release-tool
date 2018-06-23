@@ -1,4 +1,7 @@
-language: golang
+language: go
+
+go:
+- 1.10
 
 script: 
   - "./.travis/buildViaTravis.sh"
