@@ -1,54 +1,32 @@
-PLATFORMS := linux_amd64 linux_386 linux_arm5 linux_arm6 linux_arm7 linux_arm64 darwin_amd64 darwin_386 freebsd_amd64 freebsd_386 windows_386 windows_amd64 linux_arm64
+.DEFAULT_GOAL := help
 
-NAME = github-release-tool
-RELEASE_VERSION = 0.0.1
+# Configuration of different directories
+DIST_DIR := dist
+BUILD_DIR := build
 
-FLAGS_all = GOROOT=$(GOROOT) GOPATH=$(GOPATH)
-FLAGS_linux_amd64   = $(FLAGS_all) 		GOOS=linux   GOARCH=amd64
-FLAGS_linux_386     = $(FLAGS_all) 		GOOS=linux   GOARCH=386
-FLAGS_linux_arm5     = $(FLAGS_all) 	GOOS=linux   GOARCH=arm   GOARM=5 # ARM5 support for Raspberry Pi
-FLAGS_linux_arm6     = $(FLAGS_all) 	GOOS=linux   GOARCH=arm   GOARM=6 # ARM5 support for Raspberry Pi
-FLAGS_linux_arm7     = $(FLAGS_all) 	GOOS=linux   GOARCH=arm   GOARM=7 # ARM5 support for Raspberry Pi
-FLAGS_linux_arm7     = $(FLAGS_all) 	GOOS=linux   GOARCH=arm   GOARM=7 # ARM5 support for Raspberry Pi
-FLAGS_linux_arm64     = $(FLAGS_all) 	GOOS=linux   GOARCH=arm64 		  # ARM5 support for Raspberry Pi
-FLAGS_darwin_amd64  = $(FLAGS_all) 		GOOS=darwin  GOARCH=amd64 CGO_ENABLED=0
-FLAGS_darwin_386    = $(FLAGS_all) 		GOOS=darwin  GOARCH=386   CGO_ENABLED=0
-FLAGS_freebsd_amd64  = $(FLAGS_all) 	GOOS=freebsd GOARCH=amd64 CGO_ENABLED=0
-FLAGS_freebsd_386    = $(FLAGS_all) 	GOOS=freebsd GOARCH=386   CGO_ENABLED=0
-FLAGS_windows_386   = $(FLAGS_all) 		GOOS=windows GOARCH=386   CGO_ENABLED=0
-FLAGS_windows_amd64 = $(FLAGS_all) 		GOOS=windows GOARCH=amd64 CGO_ENABLED=0
+NAME := github-release-tool
+EXECUTABLE := $(NAME)
 
-.PHONY: clean test lint fmt build
+TAGS ?=
 
+VERSION := $(shell cat VERSION)
 
-deps:
-	go get github.com/Unknwon/bra
-	go get -u github.com/golang/lint/golint
-	go get -d ./...
+# Configuration for golang.mk
+include golang.mk
 
-lint:
-	golint ./...
+.PHONY: build
+build: golang-build ## Wrapper for golang-build
 
-run:
-	./bin/github-release-tool
+.PHONY: test
+test: golang-test ## Wrapper for golang-test
 
-fmt:
-	gofmt -w -s .
+.PHONY: clean
+clean: golang-clean ## Wrapper for golang-clean
 
-test:
-	go test ./...
+.PHONY: help
+help: ## Prints usage help for this makefile
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = "(:|: .*?## )"}; {printf "\033[36m%-30s\033[0m %s\n", $$(NF-1), $$(NF)}'
 
-clean:
-	rm -rf bin
-
-build-all: clean $(foreach PLATFORM,$(PLATFORMS),build-$(PLATFORM))
-
-build-%:
-	echo "Compiling release for $*"
-	$(FLAGS_$*) go get -d ./...
-	$(FLAGS_$*) go build -ldflags "-X github.com/eloo/github-release-tool/src/cmd.version=${RELEASE_VERSION}" -o 'bin/${NAME}-v${RELEASE_VERSION}-$*'
-
-build:
-	go build -o 'bin/${NAME}'
-
-.DEFAULT_GOAL := build
+.PHONY:
+goals: goals ## Prints all available goals
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = "(:|: .*?## )"}; {printf "%s\n", $$(NF-1)}'

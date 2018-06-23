@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/eloo/github-release-tool/src/cmd"
-	"github.com/eloo/github-release-tool/src/log"
 	"os"
+
+	"github.com/eloo/github-release-tool/cmd"
+	"github.com/eloo/github-release-tool/log"
 )
 
 var version string

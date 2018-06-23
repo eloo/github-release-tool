@@ -3,15 +3,17 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/eloo/github-release-tool/src/log"
-	"github.com/eloo/github-release-tool/src/models"
-	"gopkg.in/resty.v0"
 	"os"
 
-	"github.com/spf13/cobra"
+	"github.com/eloo/github-release-tool/log"
+	"github.com/eloo/github-release-tool/models"
+	resty "gopkg.in/resty.v1"
+
 	"path/filepath"
-	"robpike.io/filter"
 	"strings"
+
+	"github.com/spf13/cobra"
+	"robpike.io/filter"
 )
 
 const githubReleaseURLTemplate = "https://api.github.com/repos/%s/releases"

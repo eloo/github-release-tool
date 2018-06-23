@@ -3,5 +3,7 @@ bin
 download/
 out/
 vendor
-.gogradle
-.gradle
+.vscode
+
+dist
+build
