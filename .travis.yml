@@ -1,9 +1,4 @@
-language: java
-cache:
-  directories:
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
-jdk:
-  - oraclejdk8
+language: golang
 
-script: "./gradle/buildViaTravis.sh"
+script: 
+  - "./.travis/buildViaTravis.sh"

@@ -3,16 +3,16 @@
 
 if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
   echo -e "Build Pull Request #$TRAVIS_PULL_REQUEST => Branch [$TRAVIS_BRANCH]"
-  ./gradlew goBuild
+  make test build
 elif [ "$TRAVIS_BRANCH" == "master" ] ; then
   echo -e 'Build Master Branch ['$TRAVIS_BRANCH']'
-  ./gradlew goBuild final
+  make test golang-coverage-report release
 elif [ "$TRAVIS_BRANCH" == "develop" ] ; then
   echo -e 'Build Develop Branch ['$TRAVIS_BRANCH']'
-  ./gradlew goBuild snapshot
+  make test golang-coverage-report build
 else
   echo -e 'Build brand ['$TRAVIS_BRANCH']'
-  ./gradlew goBuild
+  make test build
 fi
 
 exit $EXIT
