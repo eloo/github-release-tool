@@ -1,13 +1,19 @@
 [run]
 init_cmds = [
   ["go", "build", "-o", "./build/github-release-tool"],
-	["./build/github-release-tool"]
+	["./build/github-release-tool", "v"]
 ]
+# Watch all directories
 watch_all = true
 watch_exts = [".go", ".ini", ".toml"]
-ignore = [".git", "vendor", "build", "dist"] # Directories to exclude from watching
+
+# Directories to exclude from watching
+ignore = [".git", ".travis",".vscode", "vendor", "build", "dist"] 
+
+# Minimum delay between two builds
 build_delay = 5
+
 cmds = [
-    ["go", "build", "-o", "./build/github-release-tool"],
-	["./bin/github-release-tool", "d", "go-gitea/gitea", "-s", "arm-7", "-o", "build"]
+  ["go", "build", "-o", "./build/github-release-tool"],
+  ["./build/github-release-tool", "v"]
 ]

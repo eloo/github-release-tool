@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	_ "github.com/eloo/github-release-tool/init"
+
 	"github.com/eloo/github-release-tool/cmd"
 	"github.com/eloo/github-release-tool/log"
 )
